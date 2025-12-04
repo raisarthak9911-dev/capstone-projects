@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TastyDash — Fast Food Delivery</title>
+  <meta name="description" content="TastyDash — modern food delivery landing page. Restaurants, categories, offers, and quick order CTA." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* -------------------------
+       Variables + Base
+       ------------------------- */
+    :root{
+      --bg:#f6fbf9;
+      --panel:#ffffff;
+      --muted:#6b7280;
+      --text:#071129;
+      --brand:#22c1a8;   /* green-teal */
+      --accent:#ff6b97;  /* pink accent */
+      --glass: rgba(255,255,255,0.6);
+      --radius:16px;
+      --card-radius:14px;
+      --max:1200px;
+      --shadow: 0 10px 30px rgba(7,17,41,0.08);
+      --ease: 300ms cubic-bezier(.2,.9,.3,1);
+      --gap: 1rem;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      color:var(--text);
+      background: linear-gradient(180deg,#f6fbf9 0%, #eef7f3 100%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.5;
+      padding-bottom:4rem;
+    }
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%;height:auto;border-radius:10px}
+    .container{width:min(100% - 2rem, var(--max));margin-inline:auto}
+
+    /* -------------------------
+       Header / Nav
+       ------------------------- */
+    header{
+      position:sticky; top:0; z-index:60;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(7,17,41,0.06);
+    }
+    .nav{display:flex;align-items:center;gap:1rem;justify-content:space-between;padding:.9rem 1rem}
+    .brand{display:flex;align-items:center;gap:.75rem;font-weight:700}
+    .logo-badge{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+      background: linear-gradient(135deg,var(--brand),var(--accent)); color:white; font-weight:800;
+      box-shadow: var(--shadow);}
+    nav[aria-label] ul{display:flex;gap:.5rem;list-style:none;margin:0;padding:0;align-items:center}
+    nav a{padding:.45rem .7rem;border-radius:10px;color:var(--muted);font-weight:600}
+    nav a:hover{background:linear-gradient(90deg,rgba(34,193,168,.06),rgba(255,107,151,.04)); color:var(--text)}
+    .nav-actions{display:flex;gap:.6rem;align-items:center}
+
+    /* -------------------------
+       Hero
+       ------------------------- */
+    .hero{padding:clamp(2rem,4.5vw,4.4rem) 0}
+    .hero-grid{display:grid;grid-template-columns:1fr 420px;gap:1.2rem;align-items:center}
+    .eyebrow{display:inline-block;font-size:.78rem;text-transform:uppercase;color:var(--brand);font-weight:700;background:rgba(34,193,168,.08);padding:.35rem .6rem;border-radius:999px}
+    h1{font-size:clamp(1.6rem,3.6vw,2.6rem);margin:.6rem 0;line-height:1.05}
+    .lead{color:var(--muted);font-size:1rem}
+    .hero-ctas{display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap}
+    .btn{
+      display:inline-flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:12px;border:1px solid transparent;font-weight:700;cursor:pointer;
+      box-shadow:none;transition:all var(--ease);
+    }
+    .btn.primary{background:linear-gradient(90deg,var(--brand),var(--accent));color:white}
+    .btn.ghost{background:transparent;border:1px solid rgba(7,17,41,.06);color:var(--text)}
+    .hero-card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8));
+      border-radius:var(--radius); padding:1rem; box-shadow:var(--shadow); border:1px solid rgba(7,17,41,0.04);
+      display:flex;flex-direction:column;gap:.8rem;
+    }
+    .hero-card .stats{display:flex;gap:.6rem;align-items:center;justify-content:space-between;padding:.4rem .2rem}
+    .stat{display:flex;flex-direction:column;gap:2px}
+    .stat strong{font-size:1.05rem}
+    .hero-banner{height:220px;border-radius:12px;background-size:cover;background-position:center;overflow:hidden}
+
+    /* quick search / categories */
+    .search-row{display:flex;gap:.6rem;margin-top:.9rem;align-items:center}
+    .search{
+      flex:1;display:flex;gap:.5rem;padding:.5rem;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfffd);border:1px solid rgba(7,17,41,.04);
+      align-items:center;
+    }
+    .search input{border:0;outline:0;padding:.5rem;font-size:1rem;background:transparent;width:100%}
+
+    /* -------------------------
+       Main layout (sidebar + products)
+       ------------------------- */
+    .main{display:grid;grid-template-columns:260px 1fr;gap:1.2rem;margin-top:1.2rem}
+    aside.filters{background:var(--panel);padding:1rem;border-radius:var(--card-radius);border:1px solid rgba(7,17,41,0.04);box-shadow:var(--shadow)}
+    .filters h3{margin:.1rem 0 .6rem}
+    .category-list{display:flex;flex-direction:column;gap:.45rem}
+    .cat-btn{display:flex;align-items:center;gap:.6rem;padding:.55rem;border-radius:10px;border:1px solid rgba(7,17,41,.04);background:transparent;cursor:pointer}
+    .cat-btn.active{background:linear-gradient(90deg,var(--brand),var(--accent));color:white;border-color:transparent}
+    .price-range{margin-top:.6rem;display:grid;gap:.4rem}
+    .filters small{color:var(--muted)}
+
+    section.products{display:flex;flex-direction:column;gap:1rem}
+    .products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+
+    .card {
+      background:var(--panel);border-radius:14px;padding:.8rem;border:1px solid rgba(7,17,41,0.04);
+      box-shadow: 0 8px 20px rgba(7,17,41,0.06);
+      display:flex;flex-direction:column;gap:.6rem;transition:transform var(--ease),box-shadow var(--ease);
+    }
+    .card:hover{transform:translateY(-6px);box-shadow:0 16px 36px rgba(7,17,41,0.09)}
+    .card .meta{display:flex;justify-content:space-between;align-items:center}
+    .card h3{margin:.1rem 0 .2rem;font-size:1.05rem}
+    .price{font-weight:800;color:var(--brand)}
+    .tag{font-size:.8rem;padding:.25rem .5rem;border-radius:999px;background:rgba(255,107,151,.08);color:var(--accent);font-weight:700}
+
+    .card .actions{display:flex;gap:.5rem;align-items:center;justify-content:space-between;margin-top:.2rem}
+    .add{background:linear-gradient(90deg,var(--brand),var(--accent));padding:.5rem .7rem;border-radius:10px;color:white;border:0;font-weight:700;cursor:pointer}
+
+    /* Offers / banners */
+    .offers{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .offer-card{padding:1rem;border-radius:14px;background:linear-gradient(90deg,rgba(34,193,168,0.08),rgba(255,107,151,0.06));border:1px solid rgba(7,17,41,0.03)}
+
+    /* CTA band */
+    .cta-band{display:flex;align-items:center;justify-content:space-between;padding:1rem;border-radius:14px;background:linear-gradient(90deg,#fff, #fbfff9);border:1px solid rgba(7,17,41,0.04);box-shadow:var(--shadow)}
+    .cta-band .cta-info h3{margin:.1rem 0}
+    .order-btn{background:linear-gradient(90deg,var(--brand),var(--accent));padding:.6rem 1rem;border-radius:12px;color:white;font-weight:800;border:0;cursor:pointer}
+
+    /* Team / testimonials / footer */
+    .team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+    blockquote{margin:0;padding:1rem;border-left:4px solid rgba(34,193,168,.14);background:#fff;border-radius:12px;color:var(--muted)}
+
+    footer{margin-top:2rem;padding:2rem 0;color:var(--muted)}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:1rem}
+
+    /* -------------------------
+       Animations + small helpers
+       ------------------------- */
+    @keyframes float {
+      from { transform: translateY(0) }
+      50% { transform: translateY(-6px) }
+      to { transform: translateY(0) }
+    }
+    .pulse { animation: float 4s ease-in-out infinite }
+
+    /* -------------------------
+       Responsive
+       ------------------------- */
+    @media (max-width:1000px){
+      .hero-grid{grid-template-columns:1fr}
+      .main{grid-template-columns:1fr;gap:1rem}
+      .team-grid{grid-template-columns:repeat(2,1fr)}
+      .offers{grid-template-columns:1fr}
+      .footer-grid{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:640px){
+      nav[aria-label] ul{display:none}
+      .nav{padding:.6rem}
+      .hero-banner{height:160px}
+      .team-grid{grid-template-columns:1fr}
+      .brand span{display:none}
+      .search-row{flex-direction:column;align-items:stretch}
+      .hero-card{padding:.6rem}
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container nav">
+      <a class="brand" href="#" aria-label="TastyDash home">
+        <div class="logo-badge">TD</div>
+        <div>
+          <div style="font-weight:800">TastyDash</div>
+          <small style="color:var(--muted);font-weight:700">Delivering smiles</small>
+        </div>
+      </a>
+
+      <nav aria-label="Main Navigation">
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#restaurants">Restaurants</a></li>
+          <li><a href="#offers">Offers</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn ghost" href="#signin" aria-label="Sign in">Sign in</a>
+        <a class="btn primary" href="#order" aria-label="Order now">Order Now</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main id="home" class="hero">
+    <div class="container hero-grid" role="region" aria-label="Hero">
+      <div>
+        <span class="eyebrow">Hot & Fresh • 30–40 min</span>
+        <h1>Crave it? Get it delivered — fast.</h1>
+        <p class="lead">Explore restaurants, discover deals, and get piping hot meals to your door. Track your order, pay online, and enjoy contactless delivery.</p>
+
+        <div class="search-row" aria-hidden="false">
+          <div class="search" role="search" aria-label="Search for restaurants or dishes">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="#9AA6B2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="#9AA6B2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <input type="search" placeholder="Search restaurants, cuisines or dishes" aria-label="Search" />
+          </div>
+          <div style="display:flex;gap:.5rem">
+            <a class="btn ghost" href="#restaurants">Browse</a>
+            <a class="btn primary" href="#offers">View Offers</a>
+          </div>
+        </div>
+
+        <div style="margin-top:1rem;display:flex;gap:.6rem;flex-wrap:wrap">
+          <div class="tag">Free delivery over ₹499</div>
+          <div class="tag" style="background:rgba 34,193,168,.08;color:var(--brand);">Top rated</div>
+        </div>
+      </div>
+
+      <!-- Right hero card with visual -->
+      <aside class="hero-card" aria-hidden="false">
+        <div class="hero-banner" style="background-image:url('images/hero-food.jpg');"></div>
+        <div class="stats">
+          <div class="stat"><small class="muted">Orders today</small><strong>2,430</strong></div>
+          <div class="stat"><small class="muted">Avg. ETA</small><strong>32 min</strong></div>
+          <div class="stat"><small class="muted">Top-rated</small><strong>4.8★</strong></div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Main content -->
+    <div class="container" style="margin-top:1rem">
+      <div class="main" role="main">
+        <!-- Filters sidebar -->
+        <aside class="filters" aria-label="Filters">
+          <h3>Categories</h3>
+          <div class="category-list" role="list">
+            <button class="cat-btn active" aria-pressed="true">All</button>
+            <button class="cat-btn" aria-pressed="false">Pizza</button>
+            <button class="cat-btn" aria-pressed="false">Burgers</button>
+            <button class="cat-btn" aria-pressed="false">Indian</button>
+            <button class="cat-btn" aria-pressed="false">Desserts</button>
+            <button class="cat-btn" aria-pressed="false">Beverages</button>
+          </div>
+
+          <div style="margin-top:.8rem">
+            <h3>Quick Filters</h3>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem">
+              <button class="cat-btn">Fast delivery</button>
+              <button class="cat-btn">Veg</button>
+              <button class="cat-btn">Offers</button>
+            </div>
+            <div style="margin-top:.6rem">
+              <small>Delivery time</small>
+              <div style="display:flex;gap:.4rem;margin-top:.4rem">
+                <input id="t15" type="radio" name="time"><label for="t15" style="font-size:.9rem;color:var(--muted)"> 15–25</label>
+                <input id="t30" type="radio" name="time"><label for="t30" style="font-size:.9rem;color:var(--muted)"> 25–40</label>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:.9rem">
+            <small class="muted">Download our app for lightning-fast ordering</small>
+          </div>
+        </aside>
+
+        <!-- Products -->
+        <section class="products" aria-label="Featured restaurants and dishes">
+          <!-- Offers -->
+          <div class="offers" aria-hidden="false">
+            <div class="offer-card">
+              <strong>Combo Deals • Up to 40% off</strong>
+              <p class="muted" style="margin-top:.4rem">Family meals and combos from top restaurants near you.</p>
+            </div>
+            <div class="offer-card">
+              <strong>Free Delivery Today</strong>
+              <p class="muted" style="margin-top:.4rem">Selected restaurants within 5 km.</p>
+            </div>
+          </div>
+
+          <!-- Product grid -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.4rem">
+            <h2 style="margin:0">Popular Near You</h2>
+            <div style="color:var(--muted)">Showing 24 restaurants</div>
+          </div>
+
+          <div class="products-grid" style="margin-top:.6rem">
+            <!-- Restaurant / Dish card 1 -->
+            <article class="card" aria-label="Restaurant: Pizza Palace">
+              <div style="display:flex;gap:.6rem;align-items:flex-start">
+                <img src="images/food1.jpg" alt="Margherita pizza" style="width:120px;height:85px;object-fit:cover;border-radius:12px">
+                <div style="flex:1">
+                  <div class="meta">
+                    <div>
+                      <h3>Pizza Palace</h3>
+                      <div style="color:var(--muted);font-size:.92rem">Italian • Pizza • ₹ 250 for two</div>
+                    </div>
+                    <div style="text-align:right">
+                      <div style="font-weight:800;color:var(--brand)">4.7★</div>
+                      <div style="color:var(--muted);font-size:.88rem">30–40 min</div>
+                    </div>
+                  </div>
+
+                  <div class="actions">
+                    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem">
+                      <span class="tag">20% off</span>
+                      <span class="tag" style="background:rgba(34,193,168,.08);color:var(--brand)">Free delivery</span>
+                    </div>
+                    <div>
+                      <button class="add" aria-label="Add Pizza Palace to cart">Order</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Card 2 -->
+            <article class="card" aria-label="Restaurant: Burger Barn">
+              <div style="display:flex;gap:.6rem;align-items:flex-start">
+                <img src="images/food2.jpg" alt="Cheeseburger and fries" style="width:120px;height:85px;object-fit:cover;border-radius:12px">
+                <div style="flex:1">
+                  <div class="meta">
+                    <div>
+                      <h3>Burger Barn</h3>
+                      <div style="color:var(--muted);font-size:.92rem">Burgers • Fast food • ₹ 200 for two</div>
+                    </div>
+                    <div style="text-align:right">
+                      <div style="font-weight:800;color:var(--brand)">4.6★</div>
+                      <div style="color:var(--muted);font-size:.88rem">25–35 min</div>
+                    </div>
+                  </div>
+
+                  <div class="actions">
+                    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem">
+                      <span class="tag">Buy 1 Get 1</span>
+                    </div>
+                    <div>
+                      <button class="add" aria-label="Order from Burger Barn">Order</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Card 3 -->
+            <article class="card" aria-label="Restaurant: Spice Route">
+              <div style="display:flex;gap:.6rem;align-items:flex-start">
+                <img src="images/food3.jpg" alt="Thali with curry and rice" style="width:120px;height:85px;object-fit:cover;border-radius:12px">
+                <div style="flex:1">
+                  <div class="meta">
+                    <div>
+                      <h3>Spice Route</h3>
+                      <div style="color:var(--muted);font-size:.92rem">Indian • North Indian • ₹ 230 for two</div>
+                    </div>
+                    <div style="text-align:right">
+                      <div style="font-weight:800;color:var(--brand)">4.8★</div>
+                      <div style="color:var(--muted);font-size:.88rem">35–45 min</div>
+                    </div>
+                  </div>
+
+                  <div class="actions">
+                    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem">
+                      <span class="tag">Special Thali</span>
+                    </div>
+                    <div>
+                      <button class="add" aria-label="Order from Spice Route">Order</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Card 4 -->
+            <article class="card" aria-label="Restaurant: Sweet Tooth">
+              <div style="display:flex;gap:.6rem;align-items:flex-start">
+                <img src="images/food4.jpg" alt="Dessert platter" style="width:120px;height:85px;object-fit:cover;border-radius:12px">
+                <div style="flex:1">
+                  <div class="meta">
+                    <div>
+                      <h3>Sweet Tooth</h3>
+                      <div style="color:var(--muted);font-size:.92rem">Desserts • Beverages • ₹ 150 for two</div>
+                    </div>
+                    <div style="text-align:right">
+                      <div style="font-weight:800;color:var(--brand)">4.9★</div>
+                      <div style="color:var(--muted);font-size:.88rem">20–30 min</div>
+                    </div>
+                  </div>
+
+                  <div class="actions">
+                    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem">
+                      <span class="tag">Dessert combos</span>
+                    </div>
+                    <div>
+                      <button class="add" aria-label="Order from Sweet Tooth">Order</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- More cards can be duplicated similarly... -->
+          </div>
+
+          <!-- CTA / Order band -->
+          <div style="margin-top:1rem" class="cta-band" role="region" aria-label="Quick order">
+            <div class="cta-info">
+              <h3 style="margin:0">Hungry? Let's get your order rolling.</h3>
+              <p class="muted" style="margin-top:.3rem">Select a restaurant and checkout with secure payment. Live tracking included.</p>
+            </div>
+            <div style="align-self:center">
+              <button class="order-btn" id="order" aria-label="Start ordering">Start Ordering — ₹0</button>
+            </div>
+          </div>
+
+          <!-- Testimonials -->
+          <div style="margin-top:1rem;display:grid;gap:.6rem">
+            <h2 style="margin:0">What customers say</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.6rem;margin-top:.5rem">
+              <blockquote>“Quick delivery and the food is piping hot. Love the offers!” — Anjali P.</blockquote>
+              <blockquote>“Easy to browse, great restaurants nearby. Highly recommended.” — Rohit S.</blockquote>
+            </div>
+          </div>
+
+        </section>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <section id="contact" class="container" style="margin-top:1.4rem">
+      <div style="display:grid;gap:.6rem">
+        <h2>Contact & Support</h2>
+        <form name="contact" method="POST" data-netlify="true" style="display:grid;gap:.6rem;grid-template-columns:1fr 1fr;">
+          <input type="hidden" name="form-name" value="contact" />
+          <label style="display:grid">
+            <small class="muted">Name</small>
+            <input name="name" required placeholder="Your name" style="padding:.6rem;border-radius:10px;border:1px solid rgba(7,17,41,.06)">
+          </label>
+          <label style="display:grid">
+            <small class="muted">Email</small>
+            <input name="email" type="email" required placeholder="you@example.com" style="padding:.6rem;border-radius:10px;border:1px solid rgba(7,17,41,.06)">
+          </label>
+          <label style="grid-column:1/-1;display:grid">
+            <small class="muted">Message</small>
+            <textarea name="message" rows="4" required placeholder="How can we help?" style="padding:.6rem;border-radius:12px;border:1px solid rgba(7,17,41,.06)"></textarea>
+          </label>
+          <div style="grid-column:1/-1;display:flex;align-items:center;gap:.6rem">
+            <button class="btn primary" type="submit">Send message</button>
+            <small class="muted">Typically replies in 1 business day.</small>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <div style="display:flex;gap:.6rem;align-items:center">
+          <div class="logo-badge" style="width:40px;height:40px;border-radius:10px">TD</div>
+          <div style="font-weight:700">TastyDash</div>
+        </div>
+        <p style="margin-top:.6rem;color:var(--muted)">© <span id="year"></span> TastyDash. All rights reserved.</p>
+      </div>
+      <div>
+        <h4 style="margin:0 0 .4rem 0">Company</h4>
+        <a class="muted" href="#about">About</a><br>
+        <a class="muted" href="#careers">Careers</a><br>
+        <a class="muted" href="#contact">Support</a>
+      </div>
+      <div>
+        <h4 style="margin:0 0 .4rem 0">Legal</h4>
+        <a class="muted" href="#">Privacy</a><br>
+        <a class="muted" href="#">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // small interactivity: set year and a simple category toggle (no external libs)
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // category buttons toggle visual state (UI-only; no filtering logic)
+    document.querySelectorAll('.cat-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=> {
+        document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // placeholder to update order total on "Start Ordering" - demo behaviour
+    document.querySelectorAll('.add').forEach((b,i)=>{
+      b.addEventListener('click', (e)=>{
+        const orderBtn = document.getElementById('order');
+        // fake increment: parse number and add 99
+        let cur = parseInt(orderBtn.textContent.replace(/[^0-9]/g,'')) || 0;
+        cur += 99;
+        orderBtn.textContent = 'Start Ordering — ₹' + cur;
+        orderBtn.classList.add('pulse');
+        setTimeout(()=>orderBtn.classList.remove('pulse'),1200);
+      });
+    });
+  </script>
+</body>
+</html>
